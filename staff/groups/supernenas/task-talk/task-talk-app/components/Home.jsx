@@ -92,8 +92,8 @@
             {view: "cardEdition", 
             menu: false, 
             navigationName:"Add a new card", 
-            selectedActivity:this.state.activities.find((activity)=>{  return activity.id===cardId})}):
-        this.setState({view: "cardEdition", menu: false, navigationName:"Add a new card", selectedActivity: undefined})
+            selectedActivity:this.state.activities.find((activity)=> activity.id===cardId)
+        }): this.setState({view: "cardEdition", menu: false, navigationName:"Add a new card", selectedActivity: undefined})
     }
     handleUpdateCard=(cardId,listId,title, message)=>{
         updateActivity(cardId,{name: title, desc:message, idList: listId},()=>{
