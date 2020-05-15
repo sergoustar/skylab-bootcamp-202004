@@ -4,8 +4,10 @@ describe("deleteGroup", () => {
     let testUsername = "pepitogrilloskylab"
 
     beforeEach(() => {
+        expect(localStorage.trello_token).to.not.be.undefined
         Trello.setToken(localStorage.trello_token)
     })
+    
     it("should remove a choosen group", (done) => {
         Trello.post("boards/", { name: "removeTestBoard" }, (group) => {
             deleteGroup(group.id, (response) => {

@@ -7,6 +7,7 @@
  * @throws {TypeError} Throws an error if activityName or listId are not strings
  * @throws {TypeError} Throws an error if onSuccess or onFailure are not functions
  */
+
 function createNewActivity(activityName, activityMessage, listId, onSuccess, onFailure) {
     Function.validate(onSuccess)
 

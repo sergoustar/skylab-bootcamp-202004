@@ -2,28 +2,10 @@
 
 describe("createNewGroup", () => {
     let testUsername = "pepitogrilloskylab"
-
-    beforeEach((done) => { 
-        let authoritationProblem = false
-
-        window.Trello.authorize({
-            type: 'popup',
-            name: 'Task Talk',
-            scope: {
-                read: 'true',
-                write: 'true'
-            },
-            expiration: 'never',
-            success: () => { 
-                expect(authoritationProblem).to.equal(false)
-                done() 
-            },
-            error: () => { 
-                authoritationProblem = true
-                expect(authoritationProblem).to.equal(false)
-                done() 
-            }
-        })
+    
+    beforeEach(() => {
+        expect(localStorage.trello_token).to.not.be.undefined
+        Trello.setToken(localStorage.trello_token)
     })
 
     it("should create a new group without lists or cards and with only one user", (done) => {
