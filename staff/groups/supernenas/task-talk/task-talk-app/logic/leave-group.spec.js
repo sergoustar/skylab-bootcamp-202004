@@ -1,11 +1,29 @@
 "use strict"
 
-describe("leavegroup", () => {
+describe("leaveGroup", () => {
     let testUsername = "pepitogrilloskylab"
-    
-    beforeEach(() => {
-        expect(localStorage.trello_token).to.not.be.undefined
-        Trello.setToken(localStorage.trello_token)
+
+    beforeEach((done) => { 
+        let authoritationProblem = false
+
+        window.Trello.authorize({
+            type: 'popup',
+            name: 'Task Talk',
+            scope: {
+                read: 'true',
+                write: 'true'
+            },
+            expiration: 'never',
+            success: () => { 
+                expect(authoritationProblem).to.equal(false)
+                done() 
+            },
+            error: () => { 
+                authoritationProblem = true
+                expect(authoritationProblem).to.equal(false)
+                done() 
+            }
+        });
     })
 
     it("should make one user leave the group", (done) => {
@@ -13,7 +31,7 @@ describe("leavegroup", () => {
             Trello.get(`boards/${group.id}/members`, (members) => {
                 Trello.put(`boards/${group.id}/members/5bc71f9b224462720874c409`, { type: "admin" }, (newmembers) => {
                     expect(newmembers.members.length).to.equal(2)
-                    leavegroup(newmembers.members[0].id, group.id, () => {
+                    leaveGroup(newmembers.members[0].id, group.id, () => {
                         Trello.get("boards/" + group.id + "/members", (_members) => {
                             expect(_members.length).to.equal(1)
                             expect(_members[0].id).to.equal(newmembers.members[1].id)
@@ -42,40 +60,40 @@ describe("leavegroup", () => {
 
     it("should trow an error when called with the wrong type of parameters", () => {
         expect(function() {
-            leavegroup((123), "listID", () => {}, () => {})
+            leaveGroup((123), "listID", () => {}, () => {})
         }).to.throw(TypeError, 123 + " is not a string")
 
         expect(function() {
-            leavegroup(undefined, "listID", () => {}, () => {})
+            leaveGroup(undefined, "listID", () => {}, () => {})
         }).to.throw(TypeError, undefined + " is not a string")
 
         expect(function() {
-            leavegroup("123", 123, () => {}, () => {})
+            leaveGroup("123", 123, () => {}, () => {})
         }).to.throw(TypeError, 123 + " is not a string")
 
         expect(function() {
-            leavegroup("123", undefined, () => {}, () => {})
+            leaveGroup("123", undefined, () => {}, () => {})
         }).to.throw(TypeError, undefined + " is not a string")
 
         expect(function() {
-            leavegroup("123123", "123123", undefined, () => {})
+            leaveGroup("123123", "123123", undefined, () => {})
         }).to.throw(TypeError, undefined + " is not a function")
        
         expect(function() {
-            leavegroup("123123", "123123", "notafunction", () => {})
+            leaveGroup("123123", "123123", "notafunction", () => {})
         }).to.throw(TypeError, "notafunction is not a function")
         
         expect(function() {
-            leavegroup("123123", "123123", () => {}, undefined)
+            leaveGroup("123123", "123123", () => {}, undefined)
         }).to.throw(TypeError, undefined + " is not a function")
         
         expect(function() {
-            leavegroup("123123", "123123", () => {}, "notafunction")
+            leaveGroup("123123", "123123", () => {}, "notafunction")
         }).to.throw(TypeError, "notafunction is not a function")
     })
 
     it("should call onFailure when given a wrong userid", (done) => {
-        leavegroup("123456789012345678901234567890", "123456789012345678901234567890", () => {
+        leaveGroup("123456789012345678901234567890", "123456789012345678901234567890", () => {
             expect(true).to.equal(false)
             done()
         }, (error) => {
@@ -87,7 +105,7 @@ describe("leavegroup", () => {
     })
 
     it("should call onFailure when given a wrong groupid", (done) => {
-        leavegroup("5bc71f9b224462720874c409", "123456789012345678901234567890", () => {
+        leaveGroup("5bc71f9b224462720874c409", "123456789012345678901234567890", () => {
             expect(true).to.equal(false)
             done()
         }, (error) => {
@@ -103,7 +121,6 @@ describe("leavegroup", () => {
             if (index >= 0) {
                 Trello.delete("boards/" + groups[index], () => {
                     index--
-                  
                     if (index >= 0) {
                         recursive(index, groups)
                     } else {

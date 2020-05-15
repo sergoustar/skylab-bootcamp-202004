@@ -1,16 +1,34 @@
 "use strict"
 
-describe("createnewlist", () => {
+describe("createNewList", () => {
     let testUsername = "pepitogrilloskylab"
 
-    beforeEach(() => { //Compruebo que hay autorización
-        expect(localStorage.trello_token).to.not.be.undefined
-        Trello.setToken(localStorage.trello_token)
+    beforeEach((done) => { //Compruebo que hay autorización
+        let authoritationProblem = false
+
+        window.Trello.authorize({
+            type: 'popup',
+            name: 'Task Talk',
+            scope: {
+                read: 'true',
+                write: 'true'
+            },
+            expiration: 'never',
+            success: () => {
+                expect(authoritationProblem).to.equal(false);
+                done()
+            },
+            error: () => {
+                authoritationProblem = true;
+                expect(authoritationProblem).to.equal(false);
+                done()
+            }
+        })
     })
 
     it("should create a new list in a specified group", (done) => {
         Trello.post("boards/", { name: "createListTest", defaultLists: false }, (group) => {
-            createnewlist("testList", group.id, (list) => {
+            createNewList("testList", group.id, (list) => {
                 expect(list.name).to.equal("testList")
                 expect(list.idBoard).to.equal(group.id)
                 done()
@@ -26,7 +44,7 @@ describe("createnewlist", () => {
     })
 
     it("should call onFailure when given a wrong idBoard", (done) => {
-        createnewlist("failedList", "12345678901234567890123456789012", () => {
+        createNewList("failedList", "12345678901234567890123456789012", () => {
             expect(true).to.equal(false)
             done()
         }, (error) => {
@@ -39,28 +57,35 @@ describe("createnewlist", () => {
 
     it("should throw an error if called with the wrong type of parameters", () => {
         expect(function() {
-            createnewlist((123), "listID", () => {}, () => {})
+            createNewList((123), "listID", () => {}, () => {})
         }).to.throw(TypeError, 123 + " is not a string")
+        
         expect(function() {
-            createnewlist(undefined, "listID", () => {}, () => {})
+            createNewList(undefined, "listID", () => {}, () => {})
         }).to.throw(TypeError, undefined + " is not a string")
+        
         expect(function() {
-            createnewlist("123", 123, () => {}, () => {})
+            createNewList("123", 123, () => {}, () => {})
         }).to.throw(TypeError, 123 + " is not a string")
+        
         expect(function() {
-            createnewlist("123", undefined, () => {}, () => {})
+            createNewList("123", undefined, () => {}, () => {})
         }).to.throw(TypeError, undefined + " is not a string")
+        
         expect(function() {
-            createnewlist("123123", "123123", undefined, () => {})
+            createNewList("123123", "123123", undefined, () => {})
         }).to.throw(TypeError, undefined + " is not a function")
+        
         expect(function() {
-            createnewlist("123123", "123123", "notafunction", () => {})
+            createNewList("123123", "123123", "notafunction", () => {})
         }).to.throw(TypeError, "notafunction is not a function")
+        
         expect(function() {
-            createnewlist("123123", "123123", () => {}, undefined)
+            createNewList("123123", "123123", () => {}, undefined)
         }).to.throw(TypeError, undefined + " is not a function")
+        
         expect(function() {
-            createnewlist("123123", "123123", () => {}, "notafunction")
+            createNewList("123123", "123123", () => {}, "notafunction")
         }).to.throw(TypeError, "notafunction is not a function")
     })
     afterEach((done) => { //Borro los tablones que he creado para las pruebas

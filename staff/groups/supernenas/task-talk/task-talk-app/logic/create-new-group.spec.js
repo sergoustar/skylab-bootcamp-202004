@@ -1,11 +1,29 @@
 "use strict"
 
-describe("createnewgroup", () => {
+describe("createNewGroup", () => {
     let testUsername = "pepitogrilloskylab"
-    
-    beforeEach(() => {
-        expect(localStorage.trello_token).to.not.be.undefined
-        Trello.setToken(localStorage.trello_token)
+
+    beforeEach((done) => { 
+        let authoritationProblem = false
+
+        window.Trello.authorize({
+            type: 'popup',
+            name: 'Task Talk',
+            scope: {
+                read: 'true',
+                write: 'true'
+            },
+            expiration: 'never',
+            success: () => { 
+                expect(authoritationProblem).to.equal(false)
+                done() 
+            },
+            error: () => { 
+                authoritationProblem = true
+                expect(authoritationProblem).to.equal(false)
+                done() 
+            }
+        })
     })
 
     it("should create a new group without lists or cards and with only one user", (done) => {
@@ -13,11 +31,10 @@ describe("createnewgroup", () => {
         
         Trello.get("members/" + testUsername, (user) => {
             expect(user.idBoards.length).to.equal(0)
-          
-            createnewgroup("createNewGroupTest","description", (group) => {
+            
+            createNewGroup("createNewGroupTest", (group) => {
                 expect(group.name).to.equal("createNewGroupTest")
-                expect(group.desc).to.equal("description")
-              
+
                 Trello.get("boards/" + group.id + "/cards", (cards) => {
                     expect(cards.length).to.equal(0)
 
@@ -51,44 +68,28 @@ describe("createnewgroup", () => {
 
     it("should throw an error if called with the wrong type of parameters", () => {
         expect(function() {
-            createnewgroup((123),"desc", () => {}, () => {})
+            createNewGroup((123), () => {}, () => {})
         }).to.throw(TypeError, 123 + " is not a string")
         
         expect(function() {
-            createnewgroup(undefined,"desc", () => {}, () => {})
+            createNewGroup(undefined, () => {}, () => {})
         }).to.throw(TypeError, undefined + " is not a string")
         
         expect(function() {
-            createnewgroup("(123)","desc", undefined, () => {})
+            createNewGroup("(123)", undefined, () => {})
         }).to.throw(TypeError, undefined + " is not a function")
         
         expect(function() {
-            createnewgroup("(123)","desc", () => {})
+            createNewGroup("(123)", () => {})
         }).to.throw(TypeError, undefined + " is not a function")
         
         expect(function() {
-            createnewgroup("(123)","desc", "notafunction", () => {})
+            createNewGroup("(123)", "notafunction", () => {})
         }).to.throw(TypeError, "notafunction is not a function")
         
         expect(function() {
-            createnewgroup("(123)","desc", () => {}, "notafunction")
+            createNewGroup("(123)", () => {}, "notafunction")
         }).to.throw(TypeError, "notafunction is not a function")
-        expect(function() {
-            createnewgroup("title",123, () => {}, ()=>{})
-        }).to.throw(TypeError, 123+" is not a string")
-    })
-    it("should call onFailure if called while having an unvalid token",done=>{
-        const trelloToken=Trello.token();
-        Trello.setToken("12345678901234567890123456789012");
-        createnewgroup("createGroupTest","createGroupDesc",(group)=>{
-            done(group)
-        },(error)=>{
-            expect(error.status).to.equal(401)
-            expect(error.responseText).to.equal("invalid token")
-            expect(error.statusText).to.equal("error")
-            Trello.setToken(trelloToken)
-            done()
-        })
     })
 
     afterEach((done) => { 
