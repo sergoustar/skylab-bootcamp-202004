@@ -34,7 +34,7 @@
                 }else if(result){
                     Trello.setToken(result)
                     getCurrentUser((user)=>{
-                        this.GetState({currentuser:user,navigationName:user.fullName})
+                        this.setState({currentuser:user,navigationName:user.fullName})
                         this.handleShowGroups();
                     },(error)=>{
                         this.setState({error: error.responseText})
