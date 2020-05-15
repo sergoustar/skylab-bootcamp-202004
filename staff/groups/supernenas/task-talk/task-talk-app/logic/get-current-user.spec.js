@@ -1,6 +1,11 @@
 "use strict"
 
 describe("getCurrentUser", () => {
+    beforeEach(() => {
+        expect(localStorage.trello_token).to.not.be.undefined
+        Trello.setToken(localStorage.trello_token)
+    })
+
     it("should return the info about pepitogrillo", (done) => {
         getCurrentUser((user) => {
             expect(user.fullName).to.equal("Pepito Grillo")
