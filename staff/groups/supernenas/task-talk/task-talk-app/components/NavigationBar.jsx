@@ -1,4 +1,4 @@
-function NavigationBar({view, navigationText, onMenuClick, onReturn}){
+function NavigationBar({view, navigationText, onMenuClick, onReturn}) {
 
     
     return <div className="navigation__bar navigation__bar--upper">
