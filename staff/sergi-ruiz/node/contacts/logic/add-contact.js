@@ -18,12 +18,12 @@ function addContact(...fields) {
 
             if (count < fields.length - 1) {
                 count++
-
+                
                 askField()
             } else {
                 const { name, surname } = contact
 
-                const file = `./data/${name.toLowerCase()}-${surname.toLowerCase()}.json`
+                const file = `${name.toLowerCase()}-${surname.toLowerCase()}.json`
 
                 function replacer(key, value) {
                     if (typeof value === 'string')
@@ -33,8 +33,7 @@ function addContact(...fields) {
                 }
 
                 fs.writeFile(file, JSON.stringify(contact, replacer, 4), error => {
-                    debugger
-                    if (error) return console.error('Failed to write contact file :(')
+                    if (error) console.error('Failed to write contact file :(')
 
                     console.log('Contact saved')
 
@@ -45,4 +44,4 @@ function addContact(...fields) {
     })()
 }
 
-addContact('name', 'surname', 'phone', 'email', 'age', 'birthdate', 'country')
+module.exports = addContact
