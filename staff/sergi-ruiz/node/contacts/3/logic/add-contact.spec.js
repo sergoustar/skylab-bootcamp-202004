@@ -16,7 +16,9 @@ const fs = require('fs')
         if (fs.existsSync('../data/${id}')) {
             console.log('hey');
         }
-        // TODO check that file <id>.json exists in data folder
+
+
+
         // TODO read file and check that it contains the name, surname and email
 
     })
