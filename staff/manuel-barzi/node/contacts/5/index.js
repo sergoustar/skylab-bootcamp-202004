@@ -1,14 +1,5 @@
 const http = require('http')
 const listContacts = require('./logic/list-contacts')
-<<<<<<< HEAD
-const searchContacts = require('/logic/search-conctacts')
-const http = require('http')
-const url = require('url')
-
-const server = net.createServer(socket => {
-    socket.on('data', data => {
-        searchContacts(query, (error, contacts) => {
-=======
 const searchContacts = require('./logic/search-contacts')
 const ListContacts = require('./components/ListContacts')
 const SearchContacts = require('./components/SearchContacts')
@@ -20,7 +11,6 @@ const server = http.createServer((req, res) => {
 
     if (url === '/contacts') {
         listContacts((error, contacts) => {
->>>>>>> develop
             if (error) throw error
 
             res.end(ListContacts(contacts))
