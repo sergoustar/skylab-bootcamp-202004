@@ -1,7 +1,29 @@
-// TODO check list contacts returns an array of valid contacts
-// STEPS
-// 1. clean data => USE fs.readdir, fs.unlink
-// 2. create contacts by hand => USE fs.writeFile
-// 3. launch logic
-// 4. validate results against data
-// 5. clean data ...
+const listContacts = require('list-contacts')
+const { random } = Math
+const { expect } = require('chai')
+const { deleteMany, create} = require('../data.users')
+
+
+describre( 'listContacts',()=>{
+    let name, email, surname, password, id
+    beforeEach(done =>{
+        name = `name-${random()}`
+        surname = `surname-${random()}`
+        email = `e-${random()}@mail.com`
+        password = `${random()}`
+        deleteMany(error => {
+            if (error) done(error)
+
+            create({name, surname, email, password}, (error, fileId) => {
+                if (error) done(error)
+    
+                id = fileId
+    
+                done()
+            })
+        })
+        
+        
+    })
+    it('should ')
+})

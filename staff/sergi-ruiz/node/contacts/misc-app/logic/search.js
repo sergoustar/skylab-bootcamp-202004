@@ -1,8 +1,11 @@
 const fs = require('fs')
 const path = require('path')
 
-module.exports = (id, callback) => {
-    fs.readdir(path.join(__dirname, '..', 'data', 'contacts'), (error, files) => {
+module.exports = (id, query, string, callback) => {
+
+    query = query.toLowerCase()
+
+    fs.readdir(path.join(__dirname, '..', 'data', string), (error, files) => {
         if (error) return callback(error)
 
         let wasError = false
@@ -10,10 +13,8 @@ module.exports = (id, callback) => {
         const contacts = []
         let count = 0
 
-        if (!files.length) return callback(new Error("You have no contacts"))
-        
         files.forEach(file => {
-            fs.readFile(path.join(__dirname, '..', 'data', 'contacts', file), 'utf8', (error, json) => {
+            fs.readFile(path.join(__dirname, '..', 'data', string, file), 'utf8', (error, json) => {
                 if (error) {
                     if (!wasError) {
                         callback(error)
@@ -27,8 +28,12 @@ module.exports = (id, callback) => {
                 if (!wasError) {
                     const contact = JSON.parse(json)
 
-                    contact.uniqueid = file.substring(8,file.length-5)
-                    if (contact.id === id) contacts.push(contact)
+                    const values = Object.values(contact)
+
+                    const matches = values.some(value => value.toLowerCase().includes(query))
+
+                    if (matches && contact.id === id) contacts.push(contact)
+
                     if (++count === files.length) callback(null, contacts)
                 }
             })
