@@ -1,47 +1,46 @@
-const readline = require('readline')
 const fs = require('fs')
+const path = require('path')
+require('../utils/string')
+const Email = require('../utils/email')
+const uid = require('../utils/uid')
+require('../utils/json')
 
-function addContact(...fields) {
-    const interface = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
+module.exports = (contact, callback) => {
+    if (typeof contact !== 'object') throw new TypeError(`${contact} is not an object`)
+
+    // TODO make it so that at least should have the following fields: (name || suranme) && (email || phone)
+
+    const { name, surname, email, phone, birthdate, country } = contact
+
+    if (name)
+        String.validate.notVoid(name)
+
+    if (surname)
+        String.validate.notVoid(surname)
+
+    if (email) {
+        String.validate.notVoid(email)
+        Email.validate(email)
+    }
+
+    if (phone)
+        String.validate.notVoid(phone)
+
+    if (birthdate) {
+        String.validate.notVoid(birthdate)
+        //Date.validate(birthdate) // TODO create this polyfill
+    }
+
+    if (country)
+        String.validate.notVoid(country)
+
+    const id = uid()
+
+    const file = `${id}.json`
+
+    fs.writeFile(path.join(__dirname, '..', 'data', file), JSON.prettify(contact), error => {
+        if (error) return callback(error)
+
+        callback(null, id)
     })
-
-    const contact = {}
-    let count = 0;
-
-    (function askField() {
-        const field = fields[count]
-
-        interface.question(`${field}? `, value => {
-            contact[field] = value
-
-            if (count < fields.length - 1) {
-                count++
-                
-                askField()
-            } else {
-                const { name, surname } = contact
-
-                const file = `${name.toLowerCase()}-${surname.toLowerCase()}.json`
-
-                function replacer(key, value) {
-                    if (typeof value === 'string')
-                        return value.toUpperCase()
-
-                    return value;
-                }
-
-                fs.writeFile(file, JSON.stringify(contact, replacer, 4), error => {
-                    if (error) console.error('Failed to write contact file :(')
-
-                    console.log('Contact saved')
-
-                    interface.close()
-                })
-            }
-        })
-    })()
 }
-
-module.exports = addContact
